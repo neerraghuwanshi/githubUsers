@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, Image, ScrollView, Text } from 'react-native'
+import { View, 
+    StyleSheet, 
+    Image, 
+    ScrollView, 
+    Text,
+    ActivityIndicator,
+} from 'react-native'
+import Colors from '../constants/Colors'
 
 
 function UserProfile(props) {
@@ -8,16 +15,44 @@ function UserProfile(props) {
 
     const [user, setUser] = useState(null)
 
-    const [repositoriesList, setRepositoriesList] = useState([])
+    const [repositoriesList, setRepositoriesList] = useState(null)
 
-    const [gistsList, setGistsList] = useState([])
+    const [gistsList, setGistsList] = useState(null)
 
-    const repos = repositoriesList.map((item, index)=> (
-        <Text 
-            key={item.id} 
-            style={styles.listItem}>
-            {index + 1 + '. ' +item.name}
-        </Text>
+    const repos = repositoriesList && repositoriesList.map(item => (
+        <React.Fragment key={item.id}>
+            <View style={styles.rowContainer}>
+                <Text style={styles.bullet}>
+                    &bull;
+                </Text>
+                <View>
+                    <Text style={styles.listItem1}>
+                        {`Name: ${item.name}`}
+                    </Text>
+                    <Text style={styles.listItem2}>
+                        {`Url: ${item.url}`}
+                    </Text>
+                </View>
+            </View>
+        </React.Fragment>
+    ))
+
+    const gists = gistsList && gistsList.map(item => (
+        <React.Fragment key={item.id}>
+            <View style={styles.rowContainer}>
+                <Text style={styles.bullet}>
+                    &bull;
+                </Text>
+                <View>
+                    <Text style={styles.listItem1}>
+                        {`Id: ${item.id}`}
+                    </Text>
+                    <Text style={styles.listItem2}>
+                        {`Url: ${item.url}`}
+                    </Text>
+                </View>
+            </View>
+        </React.Fragment>
     ))
 
     useEffect(() => {
@@ -39,52 +74,67 @@ function UserProfile(props) {
     }, [])
 
     return (
-        <ScrollView style={styles.container}>
-            {user && <>
+        gists ?
+        <ScrollView 
+            style={styles.container}
+            contentContainerStyle={styles.contentContainer}>
 
-                <Image
-                    style={styles.image}
-                    source={{
-                        uri: user.avatar_url
-                    }}/>
+            <Image
+                style={styles.image}
+                source={{
+                    uri: user.avatar_url
+                }}/>
 
-                <Text style={styles.username}>
-                    {user.login}
+            <Text style={styles.username}>
+                {user.login}
+            </Text>
+
+            <Text style={styles.name}>
+                {user.name}
+            </Text>
+
+            {user.bio && 
+            <Text style={styles.bio}>
+                {user.bio}
+            </Text>}
+            
+            {user.location && 
+            <Text style={styles.location}>
+                {user.location}
+            </Text>}
+            
+            <View style={styles.repositoriesContainer}>
+                <Text style={styles.heading}>
+                    {`Repositories: ${
+                        repositoriesList.length < 21 ?
+                        repositoriesList.length :
+                        '20+'
+                    }`}
                 </Text>
+                {repos}
+            </View>
 
-                <Text style={styles.name}>
-                    {user.name}
+            <View style={styles.repositoriesContainer}>
+                <Text style={styles.heading}>
+                    {`Gists: ${
+                        gistsList.length < 21 ?
+                            gistsList.length :
+                            '20+'
+                    }`}
                 </Text>
+                {gists}
+            </View>
 
-                {user.bio && 
-                <Text style={styles.bio}>
-                    {user.bio}
-                </Text>}
-                
-                {user.location && 
-                <Text style={styles.bio}>
-                    {user.location}
-                </Text>}
-                
-                <View style={styles.repositoriesContainer}>
-                    <Text style={styles.heading}>
-                        {`Repositories: ${repositoriesList.length}`}
-                    </Text>
-                    {repos}
-                </View>
+            <View style={styles.lastElement}>
 
-                <View style={styles.repositoriesContainer}>
-                    <Text style={styles.heading}>
-                        {`Gists: ${gistsList.length}`}
-                    </Text>
-                </View>
+            </View>
 
-                <View style={styles.lastElement}>
-
-                </View>
-
-            </>}
-        </ScrollView>
+        </ScrollView> :
+        <View style={styles.activityContainer}>
+            <ActivityIndicator
+                size='large'
+                color={Colors.primary}/>
+        </View>
     )
 }
 
@@ -92,7 +142,10 @@ function UserProfile(props) {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        paddingBottom: 100,
+    },
+    activityContainer: {
+        flex: 1,
+        justifyContent: 'center',
     },
     image: {
         width: 100,
@@ -113,12 +166,19 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 14,
         fontWeight: '700',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     bio: {
         fontSize: 14,
         fontWeight: '500',
         marginBottom: 20,
+        marginLeft: 10,
+    },
+    location: {
+        fontSize: 14,
+        fontWeight: '500',
+        marginBottom: 20,
+        marginLeft: 20,
     },
     heading: {
         fontSize: 14,
@@ -128,14 +188,26 @@ const styles = StyleSheet.create({
     repositoriesContainer: {
         marginBottom: 10,
     },
-    listItem: {
+    listItem1: {
         fontSize: 14,
         fontWeight: '500',
-        marginLeft: 20,
+        marginLeft: 5,
+        marginBottom: 3,
+    },
+    listItem2: {
+        fontSize: 14,
+        fontWeight: '500',
+        marginLeft: 5,
         marginBottom: 10,
     },
     lastElement: {
         marginBottom: 40,
+    },
+    rowContainer: {
+        flexDirection: 'row',
+    },
+    bullet: {
+        marginLeft: 10,
     },
 })
 
