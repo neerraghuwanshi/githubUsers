@@ -74,7 +74,7 @@ function UserProfile(props) {
     }, [])
 
     return (
-        gists ?
+        gists && repositoriesList ?
         <ScrollView 
             style={styles.container}
             contentContainerStyle={styles.contentContainer}>
